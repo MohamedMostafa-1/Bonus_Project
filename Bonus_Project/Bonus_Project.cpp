@@ -49,18 +49,23 @@ int ReadAnswer() {
 }
 
 //The Prints
-void PrintQuestion(int Num1, int Num2 ,int Result, string Operation ) {
+void PrintQuestion(int Num1, int Num2 ,int Result, string Operation , short& NumberOfRightAnswer , short& NumberOfWrongAnswer) {
 	cout << endl << Num1 << endl;
 	cout << Operation << endl;
 	cout << Num2 << endl;
-	cout << "___________________________";
+	cout << "___________________________\n";
 
 	int AnswerUser = ReadAnswer();
-	if (AnswerUser == Result)
+	if (AnswerUser == Result) {
 		cout << "\nThe right answer ^_^";
+		NumberOfRightAnswer++;
+		system("color 2F");
+	}
 	else {
-		cout << "\nWrong Answer ＞﹏＜";
+		cout << "\nWrong Answer >_<";
 		cout << "\nThe right answer is: " << Result;
+		NumberOfWrongAnswer++;
+		system("color 4F");
 	}
 	
 }
@@ -78,6 +83,9 @@ int GeNumbersLevels(enQuestionsLevel QuestionLevel) {
 		return RandomNumber(1, 50);
 		break;
 	case enQuestionsLevel::HardLevel:
+		return RandomNumber(1, 100);
+		break;
+	default:
 		return RandomNumber(1, 100);
 		break;
 	}
@@ -109,32 +117,101 @@ int CalculatNumbers(int Num1, int Num2, string Operation) {
 		return  Num1 - Num2;
 	else if (Operation == "x")
 		return  Num1 * Num2;
-	else if (Operation == "/")
+	else if (Operation == "/" && Num2 ==0)
 		return  Num1 / Num2;
+	else
+		return 0;
 
 }
 
-void RoundsGame(int RoundGame) {
+string QuestionLevelName(enQuestionsLevel QuestionLevel) {
+	string arrQuestionLevelName[4] = { "Easy"   ,"Middle" , "Hard"  , "Max" };
+	return arrQuestionLevelName[QuestionLevel - 1];
+}
 
-	int Num1 = GeNumbersLevels(ReadQuestoinLevel());
-	int Num2 = GeNumbersLevels(ReadQuestoinLevel());
-	int Result = 0;
+void FillstGameResults(stGameResults& GameResults,short RoundsGame, short  NumberOfRightAnswer,short NumberOfWrongAnswer,string QuestionsLeveName,string Operation) {
+	
+
+	GameResults.RoundsGame = RoundsGame;
+	GameResults.NumberOfRightAnswer = NumberOfRightAnswer;
+	GameResults.NumberOfWrongAnswer = NumberOfWrongAnswer;
+	GameResults.QuestionsLeve = QuestionsLeveName;
+	GameResults.Operation = Operation;
+}
+
+stGameResults RoundsGame(int RoundsGame) {
+	
+	stGameResults GameResults;
+
+	int Num1, Num2;
 	string Operation = GetOperatationType(ReadOperationType());
+	int Result = 0;
+	
+	enQuestionsLevel Level = ReadQuestoinLevel();
+	short  NumberOfRightAnswer = 0 , NumberOfWrongAnswer = 0;
+	string QuestionsLeveName = QuestionLevelName(Level);
 
-
-	for (int i = 1; i <= RoundGame; i++)
+	for (int i = 1; i <= RoundsGame; i++)
 	{
-		cout << "\n_________________Question[" << i << "/" << RoundGame << "]_________________\n";
+		 Num1 = GeNumbersLevels(Level);
+		 Num2 = GeNumbersLevels(Level);
+		cout << "\n_________________Question[" << i << "/" << RoundsGame << "]_________________\n";
 		Result = CalculatNumbers(Num1, Num2, Operation);
-		PrintQuestion(Num1, Num2, Result, Operation);
+		PrintQuestion(Num1, Num2, Result, Operation , NumberOfRightAnswer , NumberOfWrongAnswer);
+	}
+	FillstGameResults(GameResults,RoundsGame , NumberOfRightAnswer , NumberOfWrongAnswer, QuestionsLeveName , Operation );
+	return GameResults;
+}
+
+void FinalResultsPassOrFail(short RightAnswer, short WrongAnswer) {
+	if (RightAnswer >= WrongAnswer)
+	{
+		cout << "\n                 Final Result is Pass";
+		system("color 2F");
+	}
+	else {
+		cout << "\n                 Final Result is Fail";
+		system("color 4F");
 	}
 }
 
+void showFinalResults(stGameResults GameResults) {
+	cout << "\n_______________________________________________________";
+	FinalResultsPassOrFail(GameResults.NumberOfRightAnswer , GameResults.NumberOfWrongAnswer);
+	cout << "\n_______________________________________________________";
+
+	cout << "\nNumber of Questions: " << GameResults.RoundsGame << endl;
+	cout << "Questions Level: " << GameResults.QuestionsLeve << endl;
+	cout << "OpType: " << GameResults.Operation << endl;
+	cout << "Number of Right Answer: " << GameResults.NumberOfRightAnswer << endl;
+	cout << "Number of Wrong Answer: " << GameResults.NumberOfWrongAnswer << endl;
+
+	cout << "_______________________________________________________";
+
+}
+
+void ResetBG() {
+	system("cls");
+	system("color 0F");
+}
+
+void StartGame() {
+	char PlayAgain = 'Y';
+	do
+	{
+		ResetBG();
+		int ReadGameRound = ReadNumberOfQuestions();
+		stGameResults GameResult=RoundsGame(ReadGameRound);
+		showFinalResults(GameResult);
+		cout << "\nDo you play again? ";
+		cin >> PlayAgain;
+	} while (PlayAgain == 'y' || PlayAgain == 'Y');
+}
 
 
 int main()
 {
 	srand((unsigned)time(NULL));
-  
+	StartGame();
 }
 
