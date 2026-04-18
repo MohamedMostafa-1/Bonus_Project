@@ -80,12 +80,12 @@ int GeNumbersLevels(enQuestionsLevel QuestionLevel) {
 		return RandomNumber(1, 20);
 		break;
 	case enQuestionsLevel::MiddleLevel:
-		return RandomNumber(1, 50);
+		return RandomNumber(20, 50);
 		break;
 	case enQuestionsLevel::HardLevel:
-		return RandomNumber(1, 100);
+		return RandomNumber(50, 100);
 		break;
-	default:
+		case enQuestionsLevel::MaxLevel:
 		return RandomNumber(1, 100);
 		break;
 	}
@@ -131,7 +131,6 @@ string QuestionLevelName(enQuestionsLevel QuestionLevel) {
 
 void FillstGameResults(stGameResults& GameResults,short RoundsGame, short  NumberOfRightAnswer,short NumberOfWrongAnswer,string QuestionsLeveName,string Operation) {
 	
-
 	GameResults.RoundsGame = RoundsGame;
 	GameResults.NumberOfRightAnswer = NumberOfRightAnswer;
 	GameResults.NumberOfWrongAnswer = NumberOfWrongAnswer;
